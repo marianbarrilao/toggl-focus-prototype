@@ -620,8 +620,10 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
   const [showSuggestions, setShowSuggestions] = useState(false);
   const project = projectById(projectId);
   const descriptionRef = useRef(null);
+  const skipAutofocusSuggestRef = useRef(true);
 
   useEffect(() => {
+    skipAutofocusSuggestRef.current = true;
     descriptionRef.current?.focus();
   }, []);
 
@@ -678,7 +680,13 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
               aria-label="Task description"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              onFocus={() => setShowSuggestions(true)}
+              onFocus={() => {
+                if (skipAutofocusSuggestRef.current) {
+                  skipAutofocusSuggestRef.current = false;
+                  return;
+                }
+                setShowSuggestions(true);
+              }}
               onBlur={() => setShowSuggestions(false)}
               className="w-full text-[14px] text-stone-700 placeholder-stone-400 rounded-lg bg-stone-50 border border-stone-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200"
             />
