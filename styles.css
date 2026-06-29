@@ -1,3 +1,8 @@
+:root {
+  --color-purple: #5b4fe5;
+  --color-purple-light: #eeebfc;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
   background: #ffffff;
@@ -19,4 +24,97 @@ body {
   #report-printable, #report-printable * { visibility: visible; }
   #report-printable { position: absolute; left: 0; top: 0; width: 100%; padding: 24px; box-shadow: none !important; }
   .no-print { display: none !important; }
+}
+
+/* ============ Brand color utilities (replace inline color: PURPLE / PURPLE_LIGHT) ============ */
+.text-brand { color: var(--color-purple); }
+.bg-brand { background-color: var(--color-purple); }
+.bg-brand-light { background-color: var(--color-purple-light); }
+
+/* ============ Generic positioned grid block (entries / gaps / unavailable bands / gridlines) ============ */
+/* JS only supplies the --top / --height data via CSS custom properties; all visual rules live here. */
+.grid-block {
+  position: absolute;
+  left: 0.25rem;
+  right: 0.25rem;
+  top: var(--top);
+  height: var(--height);
+}
+.grid-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--top);
+}
+.top-pos {
+  position: absolute;
+  top: var(--top);
+}
+.grid-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--top);
+  height: var(--height);
+}
+
+/* ============ Entry block — JS supplies --accent (the project's color), CSS decides the look ============ */
+.entry-block.is-live {
+  background-color: var(--accent);
+  border: none;
+  --tw-ring-color: var(--accent);
+}
+.entry-block.is-retro {
+  background-color: color-mix(in srgb, var(--accent) 18%, white);
+  border: 1.5px dashed var(--accent);
+  --tw-ring-color: var(--accent);
+}
+.entry-block.is-dimmed {
+  opacity: 0.3;
+}
+.entry-text-accent {
+  color: var(--accent);
+}
+.entry-time-accent {
+  color: var(--accent);
+  opacity: 0.7;
+}
+.resize-grip {
+  background-color: var(--accent);
+}
+
+/* ============ Untracked / unavailable blocks ============ */
+.untracked-block {
+  background-color: rgba(245, 158, 11, 0.06);
+}
+.unavailable-block {
+  background-color: rgba(245, 245, 244, 0.6);
+  background-image: repeating-linear-gradient(135deg, rgba(120, 113, 108, 0.12) 0px, rgba(120, 113, 108, 0.12) 4px, transparent 4px, transparent 10px);
+}
+
+/* ============ Project color accents (pills, dots, dropdown rows) ============ */
+.project-pill {
+  background-color: var(--color-purple-light);
+}
+.project-accent-text {
+  color: var(--accent);
+}
+.project-accent-dot {
+  background-color: var(--accent);
+}
+
+/* ============ Progress / report bars — JS only supplies --pct and --accent ============ */
+.progress-fill {
+  width: var(--pct);
+}
+.report-bar-fill {
+  width: var(--pct);
+  background-color: var(--accent);
+}
+.report-day-bar {
+  height: var(--pct);
+  background-color: var(--accent);
+}
+.report-day-bar.is-empty {
+  background-color: #e7e5e4;
 }

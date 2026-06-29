@@ -1,8 +1,6 @@
 const { useState, useMemo, useRef, useEffect } = React;
 
 /* ============ Constants ============ */
-const PURPLE = "#5B4FE5";
-const PURPLE_LIGHT = "#EEEBFC";
 const GRID_START = 7;
 const GRID_END = 20;
 const WORK_START = 8;
@@ -195,8 +193,11 @@ function computeGapsForDate(dateEntries, dateObj) {
   return { past, future };
 }
 
-const topFor = (mins) => ((mins - toMinutes(GRID_START)) / 60) * PX_PER_HOUR;
-const heightFor = (s, e) => Math.max(((e - s) / 60) * PX_PER_HOUR, 22);
+const topPx = (mins) => ((mins - toMinutes(GRID_START)) / 60) * PX_PER_HOUR;
+const heightPx = (s, e) => Math.max(((e - s) / 60) * PX_PER_HOUR, 22);
+// CSS custom properties for a grid-positioned block — keeps top/height math in JS (it's runtime data),
+// while every visual rule (color, border, background) lives in styles.css.
+const gridVars = (start, end) => ({ "--top": `${topPx(start)}px`, "--height": `${heightPx(start, end)}px` });
 
 /* ============ Outside-click hook ============ */
 function useOutsideClick(ref, onOutside, enabled = true) {
@@ -234,7 +235,7 @@ function Tooltip({ content, children, width = "w-56" }) {
   );
 }
 
-/* ============ Icons ============ */
+/* ============ Icons (all default to currentColor — callers set color via a CSS class/var, not a prop) ============ */
 function ClockIcon({ className }) {
   return (
     <svg aria-hidden="true" className={className} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
@@ -243,17 +244,17 @@ function ClockIcon({ className }) {
     </svg>
   );
 }
-function PencilIcon({ className, color }) {
+function PencilIcon({ className }) {
   return (
-    <svg aria-hidden="true" className={className} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={color || "currentColor"} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg aria-hidden="true" className={className} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
     </svg>
   );
 }
-function CalendarPlusIcon({ className, color }) {
+function CalendarPlusIcon({ className }) {
   return (
-    <svg aria-hidden="true" className={className} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={color || "currentColor"} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+    <svg aria-hidden="true" className={className} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="5" width="18" height="16" rx="2" />
       <path d="M3 10h18M9 16h6M12 13v6" />
     </svg>
@@ -273,32 +274,39 @@ function TrashIcon() {
     </svg>
   );
 }
-function ChevronLeft() {
+function ChevronLeft({ className }) {
   return (
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <svg aria-hidden="true" className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 18l-6-6 6-6" />
     </svg>
   );
 }
-function ChevronRight() {
+function ChevronRight({ className }) {
   return (
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <svg aria-hidden="true" className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 18l6-6-6-6" />
     </svg>
   );
 }
-function CalendarIcon() {
+function CalendarIcon({ className }) {
   return (
-    <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg aria-hidden="true" className={className} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="5" width="18" height="16" rx="2" />
       <path d="M3 10h18M8 3v4M16 3v4" />
     </svg>
   );
 }
-function FolderIcon({ color }) {
+function FolderIcon({ className }) {
   return (
-    <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color || "#6B7280"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <svg aria-hidden="true" className={className} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+    </svg>
+  );
+}
+function ChevronDown({ className }) {
+  return (
+    <svg aria-hidden="true" className={className} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M6 9l6 6 6-6" />
     </svg>
   );
 }
@@ -309,9 +317,9 @@ function PlayIcon() {
     </svg>
   );
 }
-function GridGlyph() {
+function GridGlyph({ className }) {
   return (
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2">
+    <svg aria-hidden="true" className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <rect x="3" y="3" width="7" height="7" rx="1" />
       <rect x="14" y="3" width="7" height="7" rx="1" />
       <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -319,32 +327,32 @@ function GridGlyph() {
     </svg>
   );
 }
-function ListGlyph() {
+function ListGlyph({ className }) {
   return (
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round">
+    <svg aria-hidden="true" className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
     </svg>
   );
 }
-function PanelGlyph() {
+function PanelGlyph({ className }) {
   return (
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2">
+    <svg aria-hidden="true" className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <rect x="3" y="4" width="18" height="16" rx="2" />
       <path d="M15 4v16" />
     </svg>
   );
 }
-function GearGlyph() {
+function GearGlyph({ className }) {
   return (
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2">
+    <svg aria-hidden="true" className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1Z" />
     </svg>
   );
 }
-function SidebarGlyph() {
+function SidebarGlyph({ className }) {
   return (
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2">
+    <svg aria-hidden="true" className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <rect x="3" y="4" width="18" height="16" rx="2" />
       <path d="M9 4v16" />
     </svg>
@@ -356,7 +364,9 @@ function IconBtn({ children, active, title }) {
       type="button"
       title={title}
       aria-label={title}
-      className={"w-7 h-7 rounded-md flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400 " + (active ? "bg-stone-100" : "opacity-40 cursor-not-allowed")}
+      aria-disabled={!active}
+      tabIndex={active ? 0 : -1}
+      className={"w-7 h-7 rounded-md flex items-center justify-center text-stone-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400 " + (active ? "bg-stone-100" : "opacity-40 cursor-not-allowed")}
     >
       {children}
     </button>
@@ -380,13 +390,11 @@ function EntryBlock({ entry, fading, draggable, dimmed, isGhost, justFilled, onS
 
   const body = (
     <div className="relative h-full">
-      <div className={"text-[11px] font-medium truncate leading-tight pr-3 " + (isLive ? "text-white" : "")} style={!isLive ? { color: project.color } : {}}>
-        {entry.title}
-      </div>
-      <div className={"text-[10px] leading-tight " + (isLive ? "text-white/75" : "")} style={!isLive ? { color: project.color, opacity: 0.7 } : {}}>
-        {fmtTimeOfDay(entry.start)}
-      </div>
-      <span className="absolute top-1 right-1">{isLive ? <Icon className="text-white/80" /> : <Icon color={project.color} />}</span>
+      <div className={"text-[11px] font-medium truncate leading-tight pr-3 " + (isLive ? "text-white" : "entry-text-accent")}>{entry.title}</div>
+      <div className={"text-[10px] leading-tight " + (isLive ? "text-white/75" : "entry-time-accent")}>{fmtTimeOfDay(entry.start)}</div>
+      <span className={"absolute top-1 right-1 " + (isLive ? "text-white/80" : "entry-text-accent")}>
+        <Icon />
+      </span>
     </div>
   );
 
@@ -406,23 +414,20 @@ function EntryBlock({ entry, fading, draggable, dimmed, isGhost, justFilled, onS
           : undefined
       }
       className={
-        "absolute left-1 right-1 rounded-md px-2 py-1 overflow-hidden transition-all duration-200 ease-out " +
+        "grid-block entry-block rounded-md px-2 py-1 overflow-hidden transition-all duration-200 ease-out " +
+        (isLive ? "is-live" : "is-retro") +
+        " " +
         (fading ? "opacity-0 scale-95" : "opacity-100 scale-100") +
         " " +
         (draggable ? "cursor-grab hover:ring-2 hover:ring-offset-1 group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400" : "") +
         " " +
         (isGhost ? "pointer-events-none shadow-lg ring-2 z-50" : "") +
         " " +
-        (justFilled ? "gap-filled-highlight" : "")
+        (justFilled ? "gap-filled-highlight" : "") +
+        " " +
+        (dimmed ? "is-dimmed" : "")
       }
-      style={{
-        top: topFor(entry.start),
-        height: heightFor(entry.start, entry.end),
-        backgroundColor: isLive ? project.color : `${project.color}2E`,
-        border: isLive ? "none" : `1.5px dashed ${project.color}`,
-        opacity: dimmed ? 0.3 : undefined,
-        ringColor: !isLive ? project.color : undefined,
-      }}
+      style={{ ...gridVars(entry.start, entry.end), "--accent": project.color }}
       onMouseDown={draggable ? (e) => onStartDrag(e, entry) : undefined}
     >
       {isGhost ? (
@@ -452,7 +457,7 @@ function EntryBlock({ entry, fading, draggable, dimmed, isGhost, justFilled, onS
             onStartResize(e, entry);
           }}
         >
-          <div className="w-6 h-0.5 rounded-full" style={{ backgroundColor: project.color }} />
+          <div className="resize-grip w-6 h-0.5 rounded-full" />
         </div>
       )}
     </div>
@@ -467,12 +472,12 @@ function UntrackedBlock({ gap, onClick }) {
       type="button"
       onClick={onClick}
       aria-label={`${fmtDuration(duration)} untracked from ${fmtTimeOfDay(gap.start)} to ${fmtTimeOfDay(gap.end)}. Click to log.`}
-      className="absolute left-1 right-1 rounded-md border border-dashed border-amber-300 hover:bg-amber-100/70 cursor-pointer transition-colors duration-150 flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-500"
-      style={{ top: topFor(gap.start), height: heightFor(gap.start, gap.end), backgroundColor: "rgba(245,158,11,0.06)" }}
+      className="grid-block untracked-block rounded-md border border-dashed border-amber-300 hover:bg-amber-100/70 cursor-pointer transition-colors duration-150 flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-500"
+      style={gridVars(gap.start, gap.end)}
     >
       <Tooltip content={<div>{fmtDuration(duration)} untracked — click to log</div>}>
         <div className="flex items-center justify-center h-full gap-1 text-amber-500">
-          <ClockIcon className="text-amber-500" />
+          <ClockIcon />
           <span className="text-[11px] font-medium">—</span>
         </div>
       </Tooltip>
@@ -488,11 +493,11 @@ function OpenSlotBlock({ gap, onClick }) {
       type="button"
       onClick={onClick}
       aria-label={`${fmtDuration(duration)} open from ${fmtTimeOfDay(gap.start)} to ${fmtTimeOfDay(gap.end)}. Click to add a task.`}
-      className="absolute left-1 right-1 rounded-md border border-stone-200 bg-white hover:bg-indigo-50/50 hover:border-indigo-300 cursor-pointer transition-colors duration-150 flex items-center justify-center group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400"
-      style={{ top: topFor(gap.start), height: heightFor(gap.start, gap.end) }}
+      className="grid-block rounded-md border border-stone-200 bg-white hover:bg-indigo-50/50 hover:border-indigo-300 cursor-pointer transition-colors duration-150 flex items-center justify-center group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400"
+      style={gridVars(gap.start, gap.end)}
     >
       <Tooltip content={<div>{fmtDuration(duration)} open — add a task</div>}>
-        <div className="flex items-center justify-center h-full text-stone-300 group-hover:text-indigo-400">
+        <div className="flex items-center justify-center h-full text-stone-400 group-hover:text-indigo-400">
           <PlusIcon />
         </div>
       </Tooltip>
@@ -503,16 +508,7 @@ function OpenSlotBlock({ gap, onClick }) {
 /* ============ Outside-working-hours block (busy / unavailable) ============ */
 function UnavailableBlock({ start, end }) {
   return (
-    <div
-      aria-hidden="true"
-      className="absolute left-1 right-1 rounded-md"
-      style={{
-        top: topFor(start),
-        height: heightFor(start, end),
-        backgroundColor: "rgba(245,245,244,0.6)",
-        backgroundImage: "repeating-linear-gradient(135deg, rgba(120,113,108,0.12) 0px, rgba(120,113,108,0.12) 4px, transparent 4px, transparent 10px)",
-      }}
-    >
+    <div aria-hidden="true" className="grid-block unavailable-block rounded-md" style={gridVars(start, end)}>
       <Tooltip content={<div>Outside working hours</div>}>
         <div className="h-full" />
       </Tooltip>
@@ -665,8 +661,8 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wide">{title}</span>
-          <button type="button" onClick={onClose} aria-label="Close" className="w-7 h-7 rounded-md hover:bg-stone-100 flex items-center justify-center text-stone-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400">
+          <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wide">{title}</span>
+          <button type="button" onClick={onClose} aria-label="Close" className="w-7 h-7 rounded-md hover:bg-stone-100 flex items-center justify-center text-stone-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400">
             ✕
           </button>
         </div>
@@ -679,7 +675,10 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
               placeholder="Add a description"
               aria-label="Task description"
               value={note}
-              onChange={(e) => setNote(e.target.value)}
+              onChange={(e) => {
+                setNote(e.target.value);
+                setShowSuggestions(true);
+              }}
               onFocus={() => {
                 if (skipAutofocusSuggestRef.current) {
                   skipAutofocusSuggestRef.current = false;
@@ -692,7 +691,7 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
             />
             {showSuggestions && filteredSuggestions.length > 0 && (
               <div className="absolute left-0 right-0 top-full mt-1 z-10 rounded-lg bg-white shadow-xl border border-stone-200 py-1.5 px-1">
-                <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide px-2 pb-1">Recurring</div>
+                <div className="text-[10px] font-semibold text-stone-500 uppercase tracking-wide px-2 pb-1">Recurring</div>
                 {filteredSuggestions.map((item, i) => {
                   const p = projectById(item.projectId);
                   return (
@@ -704,8 +703,8 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
                       className="w-full text-left px-2 py-1.5 rounded-md hover:bg-stone-50 flex items-center justify-between text-[13px]"
                     >
                       <span className="text-stone-700">{item.title}</span>
-                      <span className="flex items-center gap-1 text-[11px]" style={{ color: p.color }}>
-                        <FolderIcon color={p.color} /> {p.name}
+                      <span className="project-accent-text flex items-center gap-1 text-[11px]" style={{ "--accent": p.color }}>
+                        <FolderIcon /> {p.name}
                       </span>
                     </button>
                   );
@@ -714,14 +713,13 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 px-2.5 py-2 rounded-full flex-shrink-0" style={{ backgroundColor: PURPLE_LIGHT }}>
-            <FolderIcon color={project.color} />
+          <div className="project-pill project-accent-text flex items-center gap-1.5 px-2.5 py-2 rounded-full flex-shrink-0" style={{ "--accent": project.color }}>
+            <FolderIcon />
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
               aria-label="Project"
-              className="text-[13px] font-medium bg-transparent focus:outline-none appearance-none pr-1"
-              style={{ color: project.color }}
+              className="project-accent-text text-[13px] font-medium bg-transparent focus:outline-none appearance-none pr-1"
             >
               {PROJECTS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -729,19 +727,17 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
                 </option>
               ))}
             </select>
-            <svg aria-hidden="true" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={project.color} strokeWidth="2.5">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
+            <ChevronDown />
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide">Start time</div>
+          <div className="text-[10px] font-semibold text-stone-500 uppercase tracking-wide">Start time</div>
           <TimeField start={start} setStart={setStart} />
         </div>
 
         <div className="space-y-1.5">
-          <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide">Duration</div>
+          <div className="text-[10px] font-semibold text-stone-500 uppercase tracking-wide">Duration</div>
           <DurationField duration={duration} setDuration={setDuration} maxDuration={maxDuration} />
         </div>
 
@@ -753,12 +749,7 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
           ) : (
             <span />
           )}
-          <button
-            type="button"
-            onClick={() => onSubmit({ projectId, start, duration, note })}
-            className="text-[13px] font-medium px-4 py-2 rounded-lg text-white"
-            style={{ backgroundColor: PURPLE }}
-          >
+          <button type="button" onClick={() => onSubmit({ projectId, start, duration, note })} className="bg-brand text-[13px] font-medium px-4 py-2 rounded-lg text-white">
             {ctaLabel}
           </button>
         </div>
@@ -781,10 +772,10 @@ function ProjectFilterPill({ activeProjectId, setActiveProjectId, counts, totalC
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={"flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[13px] font-medium border transition-colors " + (active ? "border-transparent" : "border-stone-200 text-stone-500 hover:bg-stone-50")}
-        style={active ? { backgroundColor: PURPLE_LIGHT, color: active.color } : {}}
+        className={"flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[13px] font-medium border transition-colors " + (active ? "project-pill project-accent-text border-transparent" : "border-stone-200 text-stone-500 hover:bg-stone-50")}
+        style={active ? { "--accent": active.color } : {}}
       >
-        <FolderIcon color={active ? active.color : "#6B7280"} />
+        <FolderIcon />
         {active ? active.name : "Project"}
         {active && (
           <span className="text-[11px] opacity-70">
@@ -805,7 +796,7 @@ function ProjectFilterPill({ activeProjectId, setActiveProjectId, counts, totalC
             className={"w-full text-left px-3 py-1.5 text-[13px] hover:bg-stone-50 flex items-center justify-between " + (!activeProjectId ? "font-semibold" : "")}
           >
             All projects
-            <span className="text-stone-400 text-[11px]">{totalCount}</span>
+            <span className="text-stone-500 text-[11px]">{totalCount}</span>
           </button>
           {PROJECTS.map((p) => (
             <button
@@ -820,10 +811,10 @@ function ProjectFilterPill({ activeProjectId, setActiveProjectId, counts, totalC
               className={"w-full text-left px-3 py-1.5 text-[13px] hover:bg-stone-50 flex items-center gap-2 justify-between " + (activeProjectId === p.id ? "font-semibold" : "")}
             >
               <span className="flex items-center gap-2">
-                <span aria-hidden="true" className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+                <span aria-hidden="true" className="project-accent-dot w-2 h-2 rounded-full" style={{ "--accent": p.color }} />
                 {p.name}
               </span>
-              <span className="text-stone-400 text-[11px]">{counts[p.id]}</span>
+              <span className="text-stone-500 text-[11px]">{counts[p.id]}</span>
             </button>
           ))}
         </div>
@@ -846,14 +837,14 @@ function TopBar({ activeProjectId, setActiveProjectId, counts, totalCount }) {
         className="flex-1 text-[14px] text-stone-700 placeholder-stone-400 focus:outline-none opacity-50 cursor-not-allowed"
       />
       <div className="flex items-center gap-1.5">
-        <button type="button" disabled title="Not functional in this prototype" className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[13px] font-medium text-stone-500 border border-stone-200 opacity-40 cursor-not-allowed">
+        <button type="button" aria-disabled="true" tabIndex={-1} title="Not functional in this prototype" className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[13px] font-medium text-stone-500 border border-stone-200 opacity-40 cursor-not-allowed">
           @ Task
         </button>
         <ProjectFilterPill activeProjectId={activeProjectId} setActiveProjectId={setActiveProjectId} counts={counts} totalCount={totalCount} />
-        <button type="button" disabled title="Not functional in this prototype" className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[13px] font-medium text-stone-500 border border-stone-200 opacity-40 cursor-not-allowed">
+        <button type="button" aria-disabled="true" tabIndex={-1} title="Not functional in this prototype" className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[13px] font-medium text-stone-500 border border-stone-200 opacity-40 cursor-not-allowed">
           # Tags
         </button>
-        <button type="button" disabled title="Not functional in this prototype" aria-label="Billable, not functional in this prototype" className="flex items-center justify-center w-7 h-7 rounded-full text-[13px] font-medium text-stone-500 border border-stone-200 opacity-40 cursor-not-allowed">
+        <button type="button" aria-disabled="true" tabIndex={-1} title="Not functional in this prototype" aria-label="Billable, not functional in this prototype" className="flex items-center justify-center w-7 h-7 rounded-full text-[13px] font-medium text-stone-500 border border-stone-200 opacity-40 cursor-not-allowed">
           $
         </button>
       </div>
@@ -863,11 +854,11 @@ function TopBar({ activeProjectId, setActiveProjectId, counts, totalCount }) {
         </span>
         <button
           type="button"
-          disabled
+          aria-disabled="true"
+          tabIndex={-1}
           title="Not functional in this prototype"
           aria-label="Start timer, not functional in this prototype"
-          className="w-9 h-9 rounded-full flex items-center justify-center shadow-sm opacity-40 cursor-not-allowed"
-          style={{ backgroundColor: PURPLE }}
+          className="bg-brand w-9 h-9 rounded-full flex items-center justify-center shadow-sm opacity-40 cursor-not-allowed"
         >
           <PlayIcon />
         </button>
@@ -891,14 +882,12 @@ function FiveDaysDropdown() {
         className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[13px] font-medium text-stone-600 border border-stone-200 bg-white hover:bg-stone-50"
       >
         5 Days
-        <svg aria-hidden="true" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.5">
-          <path d="M6 9l6 6 6-6" />
-        </svg>
+        <ChevronDown className="text-stone-500" />
       </button>
       {open && (
         <div role="listbox" className="absolute left-0 top-full mt-1 z-50 w-32 rounded-lg bg-white shadow-xl border border-stone-200 py-1">
           <button type="button" role="option" aria-selected="true" onClick={() => setOpen(false)} className="w-full text-left px-3 py-1.5 text-[13px] font-semibold flex items-center justify-between text-stone-700">
-            5 Days <span style={{ color: PURPLE }}>✓</span>
+            5 Days <span className="text-brand">✓</span>
           </button>
         </div>
       )}
@@ -910,21 +899,20 @@ function DateNav({ weekLabel, onPrev, onNext, onToday, isCurrentWeek }) {
   return (
     <div className="flex items-center justify-between px-5 py-2.5 border-b border-stone-200">
       <div className="flex items-center gap-3">
-        <button type="button" onClick={onPrev} aria-label="Previous week" className="p-1 rounded hover:bg-stone-100">
+        <button type="button" onClick={onPrev} aria-label="Previous week" className="p-1 rounded hover:bg-stone-100 text-stone-500">
           <ChevronLeft />
         </button>
-        <button type="button" onClick={onNext} aria-label="Next week" className="p-1 rounded hover:bg-stone-100">
+        <button type="button" onClick={onNext} aria-label="Next week" className="p-1 rounded hover:bg-stone-100 text-stone-500">
           <ChevronRight />
         </button>
         <div className="flex items-center gap-1.5 text-[13px] text-stone-600 font-medium">
-          <CalendarIcon />
+          <CalendarIcon className="text-stone-500" />
           {weekLabel}
         </div>
         <button
           type="button"
           onClick={onToday}
-          className={"px-2.5 py-1 rounded-md text-[13px] font-medium border " + (isCurrentWeek ? "text-white border-transparent" : "text-stone-600 border-stone-200 bg-white hover:bg-stone-50")}
-          style={isCurrentWeek ? { backgroundColor: PURPLE } : {}}
+          className={"px-2.5 py-1 rounded-md text-[13px] font-medium border " + (isCurrentWeek ? "bg-brand text-white border-transparent" : "text-stone-600 border-stone-200 bg-white hover:bg-stone-50")}
         >
           Today
         </button>
@@ -969,14 +957,14 @@ function LoggedSummaryBar({ totalLoggedMins, untrackedMins, onViewReports }) {
         aria-valuemax={100}
         aria-label={`${fmtDuration(totalLoggedMins)} logged this week`}
       >
-        <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, backgroundColor: PURPLE }} />
+        <div className="bg-brand progress-fill h-full rounded-full transition-all duration-300" style={{ "--pct": `${pct}%` }} />
       </div>
       <span className="text-[13px] font-semibold text-stone-700 flex-shrink-0">{fmtDuration(totalLoggedMins)}</span>
       <span className="flex items-center gap-1.5 text-[12px] font-medium text-amber-700 flex-shrink-0">
         <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-amber-500" />
         {fmtDuration(untrackedMins)} untracked this week
       </span>
-      <button type="button" onClick={onViewReports} className="text-[13px] font-medium flex-shrink-0" style={{ color: PURPLE }}>
+      <button type="button" onClick={onViewReports} className="text-brand text-[13px] font-medium flex-shrink-0">
         View reports &gt;
       </button>
     </div>
@@ -1036,7 +1024,7 @@ function ReportsModal({ weekLabel, weekDays, weekEntries, totalUntrackedMins, on
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-stone-800">Reports</h2>
-            <p className="text-xs text-stone-400">
+            <p className="text-xs text-stone-500">
               {weekLabel} · {filterLabel}
             </p>
           </div>
@@ -1044,14 +1032,14 @@ function ReportsModal({ weekLabel, weekDays, weekEntries, totalUntrackedMins, on
             type="button"
             onClick={onClose}
             aria-label="Close reports"
-            className="no-print w-7 h-7 rounded-md hover:bg-stone-100 flex items-center justify-center text-stone-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400"
+            className="no-print w-7 h-7 rounded-md hover:bg-stone-100 flex items-center justify-center text-stone-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-400"
           >
             ✕
           </button>
         </div>
 
         <div className="no-print flex items-center gap-2">
-          <label htmlFor="report-project-filter" className="text-[12px] text-stone-400">
+          <label htmlFor="report-project-filter" className="text-[12px] text-stone-500">
             Project
           </label>
           <select
@@ -1071,45 +1059,42 @@ function ReportsModal({ weekLabel, weekDays, weekEntries, totalUntrackedMins, on
 
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-semibold text-stone-800">{fmtDuration(totalLoggedMins)}</span>
-          <span className="text-xs text-stone-400">logged this week</span>
+          <span className="text-xs text-stone-500">logged this week</span>
         </div>
 
         {filteredEntries.length === 0 ? (
-          <p className="text-[13px] text-stone-400">No entries logged this week yet.</p>
+          <p className="text-[13px] text-stone-500">No entries logged this week yet.</p>
         ) : (
           <>
             <div className="bg-stone-50 rounded-xl p-3.5">
-              <div className="text-[11px] font-medium text-stone-400 mb-2">By day</div>
+              <div className="text-[11px] font-medium text-stone-500 mb-2">By day</div>
               <div className="flex items-end gap-2 h-16" role="img" aria-label={dailyTotals.map((d) => `${d.label}: ${fmtDuration(d.mins)}`).join(", ")}>
                 {dailyTotals.map((d) => (
                   <div key={d.dateStr} className="flex-1 h-full flex flex-col items-center justify-end gap-1">
                     <div
                       aria-hidden="true"
-                      className="w-full rounded-t-md"
-                      style={{
-                        height: `${Math.max((d.mins / maxDailyMins) * 100, d.mins > 0 ? 8 : 2)}%`,
-                        backgroundColor: d.mins > 0 ? PURPLE : "#E7E5E4",
-                      }}
+                      className={"report-day-bar w-full rounded-t-md " + (d.mins > 0 ? "" : "is-empty")}
+                      style={{ "--pct": `${Math.max((d.mins / maxDailyMins) * 100, d.mins > 0 ? 8 : 2)}%`, "--accent": "var(--color-purple)" }}
                     />
-                    <span className="text-[10px] text-stone-400">{d.label}</span>
+                    <span className="text-[10px] text-stone-500">{d.label}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="bg-stone-50 rounded-xl p-3.5 space-y-2.5">
-              <div className="text-[11px] font-medium text-stone-400">By project</div>
+              <div className="text-[11px] font-medium text-stone-500">By project</div>
               {perProject.map((p) => (
                 <div key={p.id}>
                   <div className="flex items-center justify-between text-[12px] mb-1">
                     <span className="flex items-center gap-1.5 text-stone-600">
-                      <span aria-hidden="true" className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+                      <span aria-hidden="true" className="project-accent-dot w-2 h-2 rounded-full" style={{ "--accent": p.color }} />
                       {p.name}
                     </span>
-                    <span className="text-stone-400">{fmtDuration(p.mins)}</span>
+                    <span className="text-stone-500">{fmtDuration(p.mins)}</span>
                   </div>
                   <div className="h-2 rounded-full bg-white overflow-hidden">
-                    <div aria-hidden="true" className="h-full rounded-full" style={{ width: `${(p.mins / maxMins) * 100}%`, backgroundColor: p.color }} />
+                    <div aria-hidden="true" className="report-bar-fill h-full rounded-full" style={{ "--pct": `${(p.mins / maxMins) * 100}%`, "--accent": p.color }} />
                   </div>
                 </div>
               ))}
@@ -1125,7 +1110,7 @@ function ReportsModal({ weekLabel, weekDays, weekEntries, totalUntrackedMins, on
         <div className="text-[12px] text-stone-500">{fmtDuration(totalUntrackedMins)} untracked this week (all projects)</div>
 
         <div className="no-print flex items-center gap-2">
-          <button type="button" onClick={() => window.print()} className="flex-1 text-[13px] font-medium px-4 py-2 rounded-lg text-white" style={{ backgroundColor: PURPLE }}>
+          <button type="button" onClick={() => window.print()} className="bg-brand flex-1 text-[13px] font-medium px-4 py-2 rounded-lg text-white">
             Export as PDF
           </button>
           <button
@@ -1150,7 +1135,7 @@ function ReportsModal({ weekLabel, weekDays, weekEntries, totalUntrackedMins, on
               onChange={(e) => setEmail(e.target.value)}
               className="flex-1 text-[12px] rounded-md border border-stone-200 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-200"
             />
-            <button type="button" onClick={handleSendEmail} className="text-[12px] px-3 py-1.5 rounded-md text-white" style={{ backgroundColor: PURPLE }}>
+            <button type="button" onClick={handleSendEmail} className="bg-brand text-[12px] px-3 py-1.5 rounded-md text-white">
               Send
             </button>
           </div>
@@ -1169,9 +1154,9 @@ function ReportsModal({ weekLabel, weekDays, weekEntries, totalUntrackedMins, on
 function DayHeader({ day, loggedMins }) {
   return (
     <div className="flex flex-col items-center py-2 border-b border-stone-200 border-l border-stone-100 first:border-l-0">
-      <div className="text-[11px] text-stone-400 font-medium">{day.label}</div>
+      <div className="text-[11px] text-stone-500 font-medium">{day.label}</div>
       <div className="text-[16px] font-semibold text-stone-700">{day.dateNum}</div>
-      <div className="text-[10px] text-stone-400 mt-0.5">{loggedMins > 0 ? fmtDuration(loggedMins) : "-"} / -</div>
+      <div className="text-[10px] text-stone-500 mt-0.5">{loggedMins > 0 ? fmtDuration(loggedMins) : "-"} / -</div>
     </div>
   );
 }
@@ -1183,7 +1168,7 @@ function HourGutter() {
   return (
     <div aria-hidden="true" className="relative w-16 flex-shrink-0" style={{ height: (GRID_END - GRID_START) * PX_PER_HOUR }}>
       {hours.map((h) => (
-        <div key={h} className="absolute right-2 -translate-y-1/2 text-[11px] text-stone-400" style={{ top: (h - GRID_START) * PX_PER_HOUR }}>
+        <div key={h} className="top-pos right-2 -translate-y-1/2 text-[11px] text-stone-500" style={{ "--top": `${(h - GRID_START) * PX_PER_HOUR}px` }}>
           {fmtHourLabel(h)}
         </div>
       ))}
@@ -1196,15 +1181,15 @@ function DayColumn({ day, visible, hidden, dragSourceId, ghostEntry, pastGaps, f
   const hours = [];
   for (let h = GRID_START; h <= GRID_END; h++) hours.push(h);
   const totalHeight = (GRID_END - GRID_START) * PX_PER_HOUR;
-  const workTop = topFor(toMinutes(WORK_START));
-  const workHeight = topFor(toMinutes(WORK_END)) - workTop;
+  const workTop = topPx(toMinutes(WORK_START));
+  const workHeight = topPx(toMinutes(WORK_END)) - workTop;
 
   return (
     <div ref={registerRef} className="relative flex-1 border-l border-stone-100" style={{ height: totalHeight }}>
       {hours.map((h) => (
-        <div key={h} aria-hidden="true" className="absolute left-0 right-0 border-t border-stone-100" style={{ top: (h - GRID_START) * PX_PER_HOUR }} />
+        <div key={h} aria-hidden="true" className="grid-line border-t border-stone-100" style={{ "--top": `${(h - GRID_START) * PX_PER_HOUR}px` }} />
       ))}
-      <div aria-hidden="true" className="absolute left-0 right-0 bg-stone-50/40" style={{ top: workTop, height: workHeight }} />
+      <div aria-hidden="true" className="grid-band bg-stone-50/40" style={{ "--top": `${workTop}px`, "--height": `${workHeight}px` }} />
 
       <UnavailableBlock start={toMinutes(GRID_START)} end={toMinutes(WORK_START)} />
       <UnavailableBlock start={toMinutes(WORK_END)} end={toMinutes(GRID_END)} />
@@ -1417,6 +1402,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white text-stone-700">
+      <h1 className="sr-only">Toggl Focus — Week View Prototype</h1>
       <div className="max-w-[1100px] mx-auto border-x border-stone-200">
         <header>
           <TopBar activeProjectId={activeProjectId} setActiveProjectId={setActiveProjectId} counts={counts} totalCount={totalCount} />
@@ -1488,7 +1474,7 @@ function App() {
       {showReports && <ReportsModal weekLabel={weekLabel} weekDays={weekDays} weekEntries={weekEntries} totalUntrackedMins={totalUntrackedMins} onClose={() => setShowReports(false)} />}
 
       <footer>
-        <p className="text-center text-[11px] text-stone-400 mt-6 mb-4">Toggl Focus — week view prototype</p>
+        <p className="text-center text-[11px] text-stone-500 mt-6 mb-4">Toggl Focus — week view prototype</p>
       </footer>
     </div>
   );

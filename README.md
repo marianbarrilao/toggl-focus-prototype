@@ -56,11 +56,15 @@ Then open `http://localhost:4500/` in your browser.
 
 ## Accessibility & SEO
 
-- Semantic landmarks (`header`, `nav`, `main`, `footer`) and a meaningful page `<title>`/`<meta description>`/Open Graph tags for SEO and link previews.
+- One visually-hidden `<h1>` plus semantic landmarks (`header`, `nav`, `main`, `footer`) so the page has a proper heading/landmark structure for both SEO crawlers and screen reader users — `<h2>Reports</h2>` inside the reports modal is the only other heading, kept at the correct level.
+- A `<noscript>` fallback in `index.html` for the (rare, but real) case of JS being disabled.
+- A meaningful page `<title>`/`<meta description>`/Open Graph/Twitter tags/canonical URL for SEO and link previews.
+- Secondary text uses `stone-500`, not `stone-400` — the lighter shade fails WCAG AA contrast (~2.5:1) against a white background; `stone-500` clears 4.5:1.
 - All icon-only buttons have `aria-label`s; decorative icons are `aria-hidden`.
 - Time entries, untracked slots, and open slots are real `<button>`/keyboard-focusable elements with descriptive accessible names (e.g. "1h untracked from 9:00 AM to 10:00 AM. Click to log."), not just clickable `<div>`s.
 - Both modals use `role="dialog"`/`aria-modal`, close on <kbd>Escape</kbd>, and auto-focus their first field.
 - The "Logged" bar is a proper `role="progressbar"`; the by-day report chart has a text equivalent for screen readers.
+- Non-functional controls use `aria-disabled` + `tabIndex={-1}` consistently (not the native `disabled` attribute), since real `disabled` suppresses hover tooltips in some browsers — this way the "why is this inert" explanation stays reachable.
 - Verified with a real browser pass: keyboard-only entry editing (Tab → Enter → edit → Escape to close) works end-to-end.
 - Known gap: dragging/resizing itself is mouse-only — the equivalent action (open the entry, edit duration/start time as text) is fully keyboard-reachable instead.
 
@@ -76,10 +80,10 @@ Then open `http://localhost:4500/` in your browser.
 ```
 index.html     Markup, CDN <script> tags, SEO/meta tags
 app.js          All component logic (loaded as a separate <script type="text/babel" src="app.js">)
-styles.css      Custom CSS (keyframes, print rules) — separate from HTML and JS
-legacy/
-  early-exploration-daily-view.html   Earlier single-day concept, superseded by this week view
+styles.css      All custom CSS and CSS custom properties — separate from HTML and JS
 ```
+
+JS only ever supplies *data* to CSS (a project's color, a computed pixel position, a percentage) via CSS custom properties (e.g. `--accent`, `--top`, `--pct`); every actual visual rule — color, border, background — lives in `styles.css`.
 
 ## Known limitations (by design)
 
