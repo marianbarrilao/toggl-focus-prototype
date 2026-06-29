@@ -4,6 +4,24 @@ A UI/UX prototype of a redesigned weekly calendar/timer view for **Toggl Focus**
 
 This is a **frontend-only prototype** — no backend, no auth, no real data persistence. Everything lives in local React state and resets on page reload.
 
+## Live demo
+
+**[View the live prototype →](https://marianbarrilao.github.io/toggl-focus-prototype/)**
+
+No login, no setup — it loads straight into a populated current week so every state (live-tracked, retroactively logged, planned, untracked, open, unavailable) is visible immediately.
+
+## Demo script
+
+A suggested order for walking someone through it live, ~3–4 minutes:
+
+1. **Orient on the grid.** Point out it's Mon 29–Fri 3, "today" is pinned to Tue the 30th at noon — that's why Monday/Tuesday-morning look "done" and the rest of the week looks open.
+2. **Filter by project.** Click the `Project` pill in the top bar, pick one — everything else fades out (~200ms) and the pill shows a live count. Make the point: nothing stale lingers, the count always matches what's on screen.
+3. **Point out the three time states** directly on the grid: a solid block (live-tracked), a tinted/dashed block with a pencil (logged after the fact), and a tinted/dashed block with a calendar icon (planned ahead, in the future).
+4. **Click an amber dashed cell** (untracked, in the past) → log time retroactively. Then click a plain "+" cell (open, in the future) → same modal, framed as "Add task" instead. Same component, different intent.
+5. **Drag an entry** to a new time, then drag its bottom edge to resize it. Then **Tab to an entry and press Enter** instead — same edit modal, no mouse required.
+6. **Open Reports** from the summary bar — per-project breakdown, the by-day chart, filter by project, then "Export as PDF" (real browser print dialog) and "Email" (clearly labeled as a demo, no email actually sent).
+7. **Close with the honest bits**: hover the dimmed `@ Task` / `# Tags` / `$` / play button in the top bar — each says outright it's not wired up, instead of silently doing nothing.
+
 ## Run it locally
 
 This is a **zero-build** project — plain HTML, CSS, and JS, with React loaded from a CDN. No `npm install`, no bundler.
