@@ -4,31 +4,19 @@ A UI/UX prototype of a redesigned weekly calendar/timer view for **Toggl Focus**
 
 This is a **frontend-only prototype** — no backend, no auth, no real data persistence. Everything lives in local React state and resets on page reload.
 
-## Live demo
-
-**[View the live prototype →](https://marianbarrilao.github.io/toggl-focus-prototype/)**
-
-(If the link 404s right after this repo was pushed, GitHub Pages can take a minute or two to finish its first deploy — refresh shortly after.)
-
 ## Run it locally
 
-This is a real React app built with [Vite](https://vitejs.dev/) — it needs Node.js (18+) and a quick install.
+This is a **zero-build** project — plain HTML, CSS, and JS, with React loaded from a CDN. No `npm install`, no bundler.
 
 ```bash
 git clone https://github.com/marianbarrilao/toggl-focus-prototype.git
 cd toggl-focus-prototype
-npm install
-npm run dev      # starts a local dev server with hot reload
+python3 -m http.server 4500   # any static server works
 ```
 
-To view the production build locally instead of the dev server:
+Then open `http://localhost:4500/` in your browser.
 
-```bash
-npm run build
-npm run preview  # serves the built docs/ folder locally
-```
-
-> Don't open `docs/index.html` directly via `file://` — browsers block ES module imports from the local filesystem. Use `npm run dev` or `npm run preview`, or just visit the live link above.
+> Don't open `index.html` directly via `file://` — the browser blocks the `app.js` script from being fetched cross-origin from a local file. Always serve it over `http://` (a one-line static server, or any "Live Server"-style editor extension).
 
 ## What's in the prototype
 
@@ -55,30 +43,24 @@ npm run preview  # serves the built docs/ folder locally
 - Time entries, untracked slots, and open slots are real `<button>`/keyboard-focusable elements with descriptive accessible names (e.g. "1h untracked from 9:00 AM to 10:00 AM. Click to log."), not just clickable `<div>`s.
 - Both modals use `role="dialog"`/`aria-modal`, close on <kbd>Escape</kbd>, and auto-focus their first field.
 - The "Logged" bar is a proper `role="progressbar"`; the by-day report chart has a text equivalent for screen readers.
+- Verified with a real browser pass: keyboard-only entry editing (Tab → Enter → edit → Escape to close) works end-to-end.
 - Known gap: dragging/resizing itself is mouse-only — the equivalent action (open the entry, edit duration/start time as text) is fully keyboard-reachable instead.
 
 ## Tech
 
-- React 18 + Vite (real build pipeline — no CDN scripts, no in-browser Babel)
-- Tailwind CSS, compiled at build time via PostCSS (not the CDN build)
-- Styles live in their own file (`src/index.css`), separate from markup/JSX
+- React 18 (UMD build) + in-browser Babel — loaded via `<script>` tags in `index.html`, no build step
+- Tailwind CSS via the CDN script
+- All custom CSS lives in its own file (`styles.css`), separate from markup and JS
 - Plain JS state, no backend, no router (single screen)
 
 ## Project structure
 
 ```
-index.html              Vite entry point + SEO/meta tags
-src/
-  main.jsx               Mounts <App />
-  App.jsx                 Top bar, date nav, week grid, day columns, entries
-  EntryForm.jsx            Log/plan/edit modal, duration & time fields
-  ReportsModal.jsx         Reports modal (charts, project filter, PDF/email)
-  icons.jsx                Shared icon components, Tooltip, useOutsideClick
-  constants.js             Seed data, date/time helpers, gap computation
-  index.css                Tailwind directives + custom CSS (keyframes, print styles)
+index.html     Markup, CDN <script> tags, SEO/meta tags
+app.js          All component logic (loaded as a separate <script type="text/babel" src="app.js">)
+styles.css      Custom CSS (keyframes, print rules) — separate from HTML and JS
 legacy/
   early-exploration-daily-view.html   Earlier single-day concept, superseded by this week view
-docs/                     Production build output, served by GitHub Pages
 ```
 
 ## Known limitations (by design)
@@ -87,3 +69,4 @@ docs/                     Production build output, served by GitHub Pages
 - "Send email" in Reports is a UI demo only; no email is actually sent.
 - Desktop-only layout; not responsive for mobile.
 - Only the 5-day week view is implemented (the "5 Days" selector in the date nav opens but doesn't switch to other ranges).
+- This is a zero-build prototype by design (easy to read, no tooling to install) — it trades a smaller, optimized production bundle for that simplicity.
