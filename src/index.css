@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  background: #ffffff;
+}
+
+@keyframes pulseFill {
+  0% { box-shadow: 0 0 0 0 rgba(91, 79, 229, 0.35); }
+  100% { box-shadow: 0 0 0 8px rgba(91, 79, 229, 0); }
+}
+.gap-filled-highlight {
+  animation: pulseFill 900ms ease-out;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #e5e1f5; border-radius: 4px; }
+
+@media print {
+  body * { visibility: hidden; }
+  #report-printable, #report-printable * { visibility: visible; }
+  #report-printable { position: absolute; left: 0; top: 0; width: 100%; padding: 24px; box-shadow: none !important; }
+  .no-print { display: none !important; }
+}

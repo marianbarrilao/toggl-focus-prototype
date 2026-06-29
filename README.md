@@ -6,24 +6,29 @@ This is a **frontend-only prototype** — no backend, no auth, no real data pers
 
 ## Live demo
 
-**[View the live prototype →](https://marian-buenro.github.io/toggl-focus-prototype/)**
+**[View the live prototype →](https://marianbarrilao.github.io/toggl-focus-prototype/)**
 
-(If the link 404s right after this repo was created, GitHub Pages can take a minute or two to finish its first deploy — refresh shortly after.)
+(If the link 404s right after this repo was pushed, GitHub Pages can take a minute or two to finish its first deploy — refresh shortly after.)
 
 ## Run it locally
 
-No build step, no `npm install`, no server required.
-
-1. Download or clone this repo.
-2. Open `index.html` directly in any modern browser (double-click it, or `open index.html` on macOS).
-
-That's it. React, Babel, and Tailwind are all loaded from public CDNs inside the HTML file, so it runs as a single static page.
+This is a real React app built with [Vite](https://vitejs.dev/) — it needs Node.js (18+) and a quick install.
 
 ```bash
-git clone https://github.com/marian-buenro/toggl-focus-prototype.git
+git clone https://github.com/marianbarrilao/toggl-focus-prototype.git
 cd toggl-focus-prototype
-open index.html   # macOS — or just double-click the file
+npm install
+npm run dev      # starts a local dev server with hot reload
 ```
+
+To view the production build locally instead of the dev server:
+
+```bash
+npm run build
+npm run preview  # serves the built docs/ folder locally
+```
+
+> Don't open `docs/index.html` directly via `file://` — browsers block ES module imports from the local filesystem. Use `npm run dev` or `npm run preview`, or just visit the live link above.
 
 ## What's in the prototype
 
@@ -36,26 +41,45 @@ open index.html   # macOS — or just double-click the file
 - **Untracked vs. open vs. unavailable, clearly differentiated**:
   - Amber dashed cells = **untracked** time in the past (click to log retroactively).
   - Plain "+" cells = **open** future slots (click to plan ahead).
-  - Diagonal-hatched cells = **outside working hours** (not clickable — you're just not working then).
-- **Drag interactions** on any logged/planned entry: drag the body to move it, drag the bottom edge to resize its duration — both snap to 5-minute increments.
+  - Diagonal-hatched cells = **outside working hours** (not interactive — you're just not working then).
+- **Drag interactions** on any logged/planned entry: drag the body to move it, drag the bottom edge to resize its duration — both snap to 5-minute increments. Each entry is also keyboard-focusable; pressing Enter/Space opens it for editing as a non-mouse alternative.
 - **One unified modal** for logging, planning, and editing entries — single editable duration field (slider + type-to-edit text, no separate "manual" tab), an editable start time, and recurring-task autocomplete suggestions.
 - **Reports** — per-project breakdown, a by-day bar chart, a project filter, "Export as PDF" (via the browser's print dialog), and a demo "Email report" flow.
 - **Working week navigation** — previous/next week, "Today", all functional. A fixed mock "now" (Jun 30, 2026, noon) is baked in so the past/future/unavailable states are all visible without needing to interact first.
 - **Non-functional UI is marked, not hidden** — controls that exist in the real product but aren't wired up here (search input, `@ Task`, `# Tags`, `$`, the play/start-timer button, alternate view icons) are visually dimmed with a tooltip explaining they're inert in this prototype, instead of silently doing nothing.
 
+## Accessibility & SEO
+
+- Semantic landmarks (`header`, `nav`, `main`, `footer`) and a meaningful page `<title>`/`<meta description>`/Open Graph tags for SEO and link previews.
+- All icon-only buttons have `aria-label`s; decorative icons are `aria-hidden`.
+- Time entries, untracked slots, and open slots are real `<button>`/keyboard-focusable elements with descriptive accessible names (e.g. "1h untracked from 9:00 AM to 10:00 AM. Click to log."), not just clickable `<div>`s.
+- Both modals use `role="dialog"`/`aria-modal`, close on <kbd>Escape</kbd>, and auto-focus their first field.
+- The "Logged" bar is a proper `role="progressbar"`; the by-day report chart has a text equivalent for screen readers.
+- Known gap: dragging/resizing itself is mouse-only — the equivalent action (open the entry, edit duration/start time as text) is fully keyboard-reachable instead.
+
 ## Tech
 
-- React 18 (UMD build, no bundler)
-- Babel Standalone (in-browser JSX transform)
-- Tailwind CSS (CDN build)
-- All in one self-contained `index.html` — no `package.json`, no build tooling
+- React 18 + Vite (real build pipeline — no CDN scripts, no in-browser Babel)
+- Tailwind CSS, compiled at build time via PostCSS (not the CDN build)
+- Styles live in their own file (`src/index.css`), separate from markup/JSX
+- Plain JS state, no backend, no router (single screen)
 
-## Files
+## Project structure
 
-| File | Description |
-|---|---|
-| `index.html` | The main prototype — week view, the focus of this project. |
-| `early-exploration-daily-view.html` | An earlier single-day calendar concept explored before settling on the week view. Kept for reference; superseded by `index.html`. |
+```
+index.html              Vite entry point + SEO/meta tags
+src/
+  main.jsx               Mounts <App />
+  App.jsx                 Top bar, date nav, week grid, day columns, entries
+  EntryForm.jsx            Log/plan/edit modal, duration & time fields
+  ReportsModal.jsx         Reports modal (charts, project filter, PDF/email)
+  icons.jsx                Shared icon components, Tooltip, useOutsideClick
+  constants.js             Seed data, date/time helpers, gap computation
+  index.css                Tailwind directives + custom CSS (keyframes, print styles)
+legacy/
+  early-exploration-daily-view.html   Earlier single-day concept, superseded by this week view
+docs/                     Production build output, served by GitHub Pages
+```
 
 ## Known limitations (by design)
 
