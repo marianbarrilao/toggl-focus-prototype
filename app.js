@@ -1161,6 +1161,18 @@ function DayHeader({ day, loggedMins }) {
   );
 }
 
+// Invisible clone of DayHeader's exact markup/classes, so the hour gutter's top offset always
+// matches the real header height (a hardcoded pixel value drifted out of sync and misaligned the grid).
+function DayHeaderSpacer() {
+  return (
+    <div aria-hidden="true" className="invisible flex flex-col items-center py-2 border-b border-stone-200">
+      <div className="text-[11px] font-medium">Mon</div>
+      <div className="text-[16px] font-semibold">00</div>
+      <div className="text-[10px] mt-0.5">0h / -</div>
+    </div>
+  );
+}
+
 /* ============ Hour gutter ============ */
 function HourGutter() {
   const hours = [];
@@ -1413,7 +1425,8 @@ function App() {
         </header>
 
         <main aria-label={`Week of ${weekLabel}`} className="flex">
-          <div className="pt-[42px]">
+          <div>
+            <DayHeaderSpacer />
             <HourGutter />
           </div>
           {weekDays.map((day) => {
