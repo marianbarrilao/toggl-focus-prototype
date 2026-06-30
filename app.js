@@ -1463,7 +1463,7 @@ function App() {
           kind={openForm.mode}
           defaultProjectId={openForm.mode === "edit" ? openForm.entry.projectId : activeProjectId || PROJECTS[0].id}
           initialStart={openForm.mode === "edit" ? openForm.entry.start : openForm.gap.start}
-          initialDuration={openForm.mode === "edit" ? openForm.entry.end - openForm.entry.start : openForm.gap.end - openForm.gap.start}
+          initialDuration={openForm.mode === "edit" ? openForm.entry.end - openForm.entry.start : Math.min(45, openForm.gap.end - openForm.gap.start)}
           initialNote={openForm.mode === "edit" ? (["Logged time", "Planned task"].includes(openForm.entry.title) ? "" : openForm.entry.title) : ""}
           onSubmit={openForm.mode === "edit" ? handleSubmitEdit : handleSubmitCreate}
           onDelete={openForm.mode === "edit" ? handleDeleteEntry : undefined}
