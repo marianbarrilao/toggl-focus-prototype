@@ -579,7 +579,7 @@ function TimeField({ start, setStart }) {
   function commit() {
     const parsed = parseTimeInput(raw);
     if (parsed != null) {
-      const clamped = Math.max(toMinutes(WORK_START), Math.min(parsed, toMinutes(WORK_END) - 5));
+      const clamped = Math.max(toMinutes(GRID_START), Math.min(parsed, toMinutes(GRID_END) - 5));
       setStart(Math.round(clamped / 5) * 5);
     }
     setEditing(false);
@@ -631,7 +631,7 @@ function EntryForm({ kind, defaultProjectId, initialStart, initialDuration, init
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  const maxDuration = Math.max(5, Math.min(480, toMinutes(WORK_END) - start));
+  const maxDuration = Math.max(5, Math.min(480, toMinutes(GRID_END) - start));
   useEffect(() => {
     if (duration > maxDuration) setDuration(maxDuration);
   }, [start]);
@@ -1345,7 +1345,7 @@ function App() {
     if (info.mode === "resize") {
       const deltaMinutes = Math.round((dy / PX_PER_HOUR) * 60 / 5) * 5;
       let newEnd = info.origEnd + deltaMinutes;
-      newEnd = Math.max(info.origStart + 5, Math.min(newEnd, toMinutes(WORK_END)));
+      newEnd = Math.max(info.origStart + 5, Math.min(newEnd, toMinutes(GRID_END)));
       info.preview = { date: info.origDate, start: info.origStart, end: newEnd };
       setDragPreview({ entryId: info.entryId, ...info.preview });
       return;
@@ -1357,7 +1357,7 @@ function App() {
     const relY = e.clientY - col.rect.top;
     let newStart = toMinutes(GRID_START) + (relY / PX_PER_HOUR) * 60;
     newStart = Math.round(newStart / 5) * 5;
-    newStart = Math.max(toMinutes(WORK_START), Math.min(newStart, toMinutes(WORK_END) - duration));
+    newStart = Math.max(toMinutes(GRID_START), Math.min(newStart, toMinutes(GRID_END) - duration));
     info.preview = { date: col.dateStr, start: newStart, end: newStart + duration };
     setDragPreview({ entryId: info.entryId, ...info.preview });
   }
